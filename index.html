@@ -6,37 +6,23 @@
     <title>Generador de Programa Bautismal</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js CDN (Librería reactiva ultraligera) -->
+    <!-- Alpine.js CDN -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <style>
-        /* Reglas de maquetación para exportación a PDF e Impresión */
         @media print {
-            .no-print {
-                display: none !important;
-            }
-            .print-only {
-                display: block !important;
-            }
-            body {
-                background-color: white !important;
-                padding: 0 !important;
-            }
-            .page-break {
-                page-break-before: always;
-            }
-            .shadow-2xl, .shadow-lg {
-                box-shadow: none !important;
-            }
-            .border-t-8 {
-                border-top-width: 4px !important;
-            }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background-color: white !important; padding: 0 !important; }
+            .page-break { page-break-before: always; }
+            .shadow-2xl, .shadow-lg { box-shadow: none !important; }
+            .border-t-8 { border-top-width: 4px !important; }
         }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen" x-data="programaBautismalApp()">
 
-    <!-- BARRA SUPERIOR (NO IMPRIMIBLE) -->
+    <!-- BARRA SUPERIOR -->
     <header class="no-print bg-blue-900 text-white p-4 shadow-md flex justify-between items-center sticky top-0 z-50">
         <div>
             <h1 class="text-xl font-bold">Generador de Programas Bautismales</h1>
@@ -49,12 +35,10 @@
         </button>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL: VISTA DIVIDIDA -->
+    <!-- CONTENEDOR PRINCIPAL -->
     <main class="max-w-[1600px] mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- ========================================== -->
-        <!-- PANEL IZQUIERDO: FORMULARIO (NO IMPRIMIBLE)-->
-        <!-- ========================================== -->
+        <!-- PANEL IZQUIERDO: FORMULARIO -->
         <section class="no-print lg:col-span-5 bg-white p-6 rounded-xl shadow-md space-y-6 max-h-[85vh] overflow-y-auto border border-gray-200">
             
             <h2 class="text-lg font-bold text-blue-900 border-b pb-2">1. Logística y Contexto</h2>
@@ -77,6 +61,15 @@
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Dirige</label>
                     <input type="text" x-model="programa.dirige" placeholder="Nombre dirigente" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+            </div>
+
+            <!-- NUEVO: BIENVENIDAS -->
+            <div class="space-y-2 pt-1">
+                <label class="block text-xs font-bold text-gray-700">Palabras de Bienvenida</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" x-model="programa.bienvenidaOrganizacion" placeholder="Bienvenida (Organización)" class="border rounded p-2 text-sm">
+                    <input type="text" x-model="programa.bienvenidaBarrio" placeholder="Bienvenida (Barrio)" class="border rounded p-2 text-sm">
                 </div>
             </div>
 
@@ -192,22 +185,38 @@
                 </template>
             </div>
 
-            <!-- Himno Cierre y Oraciones -->
-            <div class="grid grid-cols-2 gap-2">
-                <input type="text" x-model="programa.oracionApertura" placeholder="Oración Apertura" class="border rounded p-2 text-sm">
-                <input type="text" x-model="programa.oracionCierre" placeholder="Oración Cierre" class="border rounded p-2 text-sm">
+            <!-- NUEVO: Himno Cierre -->
+            <div class="space-y-2 pt-2">
+                <div class="flex justify-between items-center">
+                    <label class="text-xs font-bold text-gray-700">Himno Final / Cierre</label>
+                    <a href="https://www.churchofjesuschrist.org/study/music?lang=spa" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 hover:underline">🔍 Buscar Himno</a>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <input type="text" x-model="programa.himnoCierre.numero" placeholder="Nº" class="border rounded p-2 text-sm">
+                    <input type="text" x-model="programa.himnoCierre.titulo" placeholder="Título del Himno" class="col-span-2 border rounded p-2 text-sm">
+                </div>
+                <input type="text" @input="sanitizarUrlHimno('himnoCierre', $event.target.value)" placeholder="Pegar enlace del himno (URL)" class="w-full border rounded p-2 text-xs text-gray-600">
+            </div>
+
+            <!-- Oraciones -->
+            <div class="grid grid-cols-2 gap-2 pt-2">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Oración Apertura</label>
+                    <input type="text" x-model="programa.oracionApertura" placeholder="Nombre completo" class="w-full border rounded p-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Oración Cierre</label>
+                    <input type="text" x-model="programa.oracionCierre" placeholder="Nombre completo" class="w-full border rounded p-2 text-sm">
+                </div>
             </div>
 
         </section>
 
-        <!-- ========================================== -->
-        <!-- PANEL DERECHO: PREVISUALIZACIÓN / IMPRESIÓN-->
-        <!-- ========================================== -->
+        <!-- PANEL DERECHO: PREVISUALIZACIÓN -->
         <section class="lg:col-span-7 bg-white p-8 shadow-2xl rounded-xl border-t-8 border-blue-600 print:w-full print:p-0 print:border-none">
             
-            <!-- PÁGINA 1: PROGRAMA PÚBLICO -->
             <div class="space-y-6">
-                <!-- Header del Documento -->
+                <!-- Header -->
                 <div class="text-center">
                     <h1 class="text-xl font-bold text-blue-900 uppercase tracking-widest mb-1">Programa Bautismal</h1>
                     <div class="text-2xl md:text-3xl font-black text-blue-800 border-b-2 border-blue-100 pb-2">
@@ -218,7 +227,7 @@
                     <p class="text-xs text-gray-500 mt-1" x-text="(programa.barrio ? 'Barrio: ' + programa.barrio : 'Barrio: __________') + ' | ' + (programa.fecha || 'Fecha: __________')"></p>
                 </div>
 
-                <!-- Nota Fotografías -->
+                <!-- Fotografías -->
                 <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
                     <h2 class="font-bold text-blue-900 text-xs flex items-center gap-1 mb-1">📸 Nota sobre fotografías</h2>
                     <p class="text-xs text-gray-700">Estar presente 10 minutos antes de iniciar. Orden de fotos: 1) Persona bautizada sola, 2) Familia, 3) Misioneros, 4) Barrio y líderes.</p>
@@ -247,25 +256,32 @@
                         <p class="text-xs mt-1">Oración: <span x-text="programa.oracionApertura || '__________________________'"></span></p>
                     </div>
 
-                    <!-- 2. Discursos -->
+                    <!-- 2. Bienvenida -->
                     <div class="p-3 bg-gray-50 rounded border space-y-1">
-                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">2. Mensajes del Evangelio</p>
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">2. Palabras de Bienvenida</p>
+                        <p class="text-xs">• <span class="font-semibold">Organización:</span> <span x-text="programa.bienvenidaOrganizacion || '__________________________'"></span></p>
+                        <p class="text-xs">• <span class="font-semibold">Barrio:</span> <span x-text="programa.bienvenidaBarrio || '__________________________'"></span></p>
+                    </div>
+
+                    <!-- 3. Discursos -->
+                    <div class="p-3 bg-gray-50 rounded border space-y-1">
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">3. Mensajes del Evangelio</p>
                         <template x-for="d in programa.discursantes" :key="d.nombre">
                             <p class="text-xs ml-2">• <span class="font-semibold" x-text="d.tema + ':'"></span> <span x-text="d.nombre || '__________________________'"></span></p>
                         </template>
                     </div>
 
-                    <!-- 3. Número Especial (Opcional) -->
+                    <!-- 4. Número Especial -->
                     <template x-if="programa.numeroEspecial.activo">
                         <div class="p-3 bg-gray-50 rounded border">
-                            <p class="font-bold text-blue-900 uppercase text-xs mb-1">3. Número Especial</p>
+                            <p class="font-bold text-blue-900 uppercase text-xs mb-1">4. Número Especial</p>
                             <p class="text-xs" x-text="(programa.numeroEspecial.participantes || '__________') + ' - ' + (programa.numeroEspecial.descripcionAccion || '__________')"></p>
                         </div>
                     </template>
 
-                    <!-- 4. El Bautismo -->
+                    <!-- 5. El Bautismo -->
                     <div class="bg-blue-900 p-5 rounded-lg text-white shadow-md">
-                        <p class="font-bold mb-2 text-blue-200 uppercase tracking-widest text-xs">4. El Bautismo</p>
+                        <p class="font-bold mb-2 text-blue-200 uppercase tracking-widest text-xs">5. El Bautismo</p>
                         
                         <template x-for="c in programa.bautizados" :key="c.id">
                             <div class="mb-3 border-b border-blue-800 pb-2 text-xs">
@@ -278,33 +294,34 @@
                         <p class="text-[10px] italic opacity-80 mt-2">* Se solicita a la persona asignada con la toalla estar lista para recibir al nuevo miembro al salir de la pila.</p>
                     </div>
 
-                    <!-- 5. Tiempo de Reverencia -->
+                    <!-- 6. Reverencia y Testimonios -->
                     <div class="p-3 bg-gray-50 rounded border">
-                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">5. Tiempo de Reverencia</p>
-                        <p class="text-xs italic text-gray-600">Música de himnos mientras el oficiante y el nuevo miembro se cambian de ropa.</p>
-                    </div>
-
-                    <!-- 6. Testimonios -->
-                    <div class="p-3 bg-blue-50 rounded border border-blue-200">
-                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">6. Testimonios</p>
-                        <p class="text-xs text-gray-700">Tiempo abierto para testimonies, invitando especialmente al nuevo miembro.</p>
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">6. Reverencia y Testimonios</p>
+                        <p class="text-xs italic text-gray-600 mb-1">Música de himnos mientras el oficiante y el nuevo miembro se cambian de ropa.</p>
+                        <p class="text-xs text-gray-700">Tiempo abierto para testimonios, invitando especialmente al nuevo miembro.</p>
                     </div>
 
                     <!-- 7. Cierre -->
-                    <div class="p-3 bg-gray-50 rounded border">
+                    <div class="p-3 bg-gray-50 rounded border space-y-1">
                         <p class="font-bold text-blue-900 uppercase text-xs mb-1">7. Cierre</p>
+                        <p class="text-xs">
+                            Himno Final: 
+                            <template x-if="programa.himnoCierre.urlLimpia">
+                                <a :href="programa.himnoCierre.urlLimpia" target="_blank" class="text-blue-600 underline font-semibold" x-text="(programa.himnoCierre.numero ? '#' + programa.himnoCierre.numero + ' - ' : '') + (programa.himnoCierre.titulo || '__________________________')"></a>
+                            </template>
+                            <template x-if="!programa.himnoCierre.urlLimpia">
+                                <span x-text="(programa.himnoCierre.numero ? '#' + programa.himnoCierre.numero + ' - ' : '') + (programa.himnoCierre.titulo || '__________________________')"></span>
+                            </template>
+                        </p>
                         <p class="text-xs">Oración de Cierre: <span x-text="programa.oracionCierre || '__________________________'"></span></p>
                     </div>
                 </div>
             </div>
 
-            <!-- ========================================== -->
-            <!-- PÁGINA 2: ANEXO FICHAS DE APOYO (IMPRESIÓN)-->
-            <!-- ========================================== -->
+            <!-- PÁGINA 2: ANEXO FICHAS DE APOYO -->
             <div class="page-break pt-8 mt-8 border-t-2 border-dashed border-gray-300 print:border-none">
                 <h2 class="text-center font-bold text-blue-900 uppercase tracking-wider mb-6 text-base">Anexo: Tarjetas de Apoyo para Oficiantes</h2>
 
-                <!-- Tarjeta para Bautismo -->
                 <template x-for="c in programa.bautizados" :key="'ficha-' + c.id">
                     <div class="bg-white p-5 rounded-lg border-2 border-blue-600 mb-6 text-blue-900">
                         <p class="text-xs font-bold uppercase tracking-widest text-blue-500 mb-1">Ficha de Ordenanza Bautismal</p>
@@ -318,7 +335,6 @@
                     </div>
                 </template>
 
-                <!-- Tarjeta para Confirmación (Condicional) -->
                 <template x-if="programa.confirmacionMismoDia">
                     <div class="bg-white p-5 rounded-lg border-2 border-green-600 text-slate-900 mt-6">
                         <p class="text-xs font-bold uppercase tracking-widest text-green-600 mb-1">Ficha de Confirmación</p>
@@ -348,9 +364,12 @@
                     barrio: '',
                     preside: '',
                     dirige: '',
+                    bienvenidaOrganizacion: '',
+                    bienvenidaBarrio: '',
                     oracionApertura: '',
                     oracionCierre: '',
                     himnoApertura: { numero: '', titulo: '', urlOriginal: '', urlLimpia: '' },
+                    himnoCierre: { numero: '', titulo: '', urlOriginal: '', urlLimpia: '' },
                     bautizados: [
                         { id: Date.now(), nombres: '', apellidos: '', oficiante: '', oficianteAprobadoObispo: false, testigo1: '', testigo2: '' }
                     ],
@@ -363,12 +382,10 @@
                     oficianteConfirmacion: ''
                 },
 
-                // Devuelve el oficiante según la opción seleccionada
                 obtenerOficiante(converso) {
                     return this.usarMismoOficiante ? this.oficianteGeneral : converso.oficiante;
                 },
 
-                // Gestión dinámica de Conversos
                 agregarConverso() {
                     this.programa.bautizados.push({
                         id: Date.now() + Math.random(),
@@ -384,7 +401,6 @@
                     this.programa.bautizados.splice(index, 1);
                 },
 
-                // Gestión dinámica de Discursantes
                 agregarDiscursante() {
                     if (this.programa.discursantes.length < 3) {
                         this.programa.discursantes.push({ nombre: '', tema: 'Santa Cena' });
@@ -394,7 +410,6 @@
                     this.programa.discursantes.splice(index, 1);
                 },
 
-                // Algoritmo de Sanitización de URL mediante Expresión Regular
                 sanitizarUrlHimno(campo, textoEntrada) {
                     const regexUrl = /(https?:\/\/[^\s]+)/g;
                     const coincidencias = textoEntrada.match(regexUrl);
