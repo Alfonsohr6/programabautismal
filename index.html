@@ -265,11 +265,12 @@
                     <p><span class="font-bold">Dirige:</span> <span x-text="programa.dirige || '__________________________'"></span></p>
                 </div>
 
-                <!-- Lista del Programa -->
+                <!-- Lista del Programa Dinámica -->
                 <div class="space-y-4 text-sm">
-                    <!-- 1. Apertura -->
+                
+                    <!-- Apertura -->
                     <div class="p-3 bg-gray-50 rounded border">
-                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">1. Apertura</p>
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1" x-text="numPaso('apertura') + ' Apertura'"></p>
                         <p class="text-xs">
                             Himno: 
                             <template x-if="programa.himnoApertura.urlLimpia">
@@ -281,63 +282,73 @@
                         </p>
                         <p class="text-xs mt-1">Oración: <span x-text="programa.oracionApertura || '__________________________'"></span></p>
                     </div>
-
-                    <!-- 2. Palabras de Bienvenida -->
+                
+                    <!-- Mensajes del Evangelio -->
                     <div class="p-3 bg-gray-50 rounded border space-y-1">
-                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">2. Palabras de Bienvenida</p>
-                        <p class="text-xs">• <span class="font-semibold">Organización:</span> <span x-text="programa.bienvenidaOrganizacion || '__________________________'"></span></p>
-                        <p class="text-xs">• <span class="font-semibold">Barrio:</span> <span x-text="programa.bienvenidaBarrio || '__________________________'"></span></p>
-                    </div>
-
-                    <!-- 3. Mensajes del Evangelio -->
-                    <div class="p-3 bg-gray-50 rounded border space-y-1">
-                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">3. Mensajes del Evangelio</p>
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1" x-text="numPaso('discursos') + ' Mensajes del Evangelio'"></p>
                         <template x-for="d in programa.discursantes" :key="d.nombre">
                             <p class="text-xs ml-2">• <span class="font-semibold" x-text="d.tema + ':'"></span> <span x-text="d.nombre || '__________________________'"></span></p>
                         </template>
                     </div>
-
-                    <!-- 4. Número Especial -->
+                
+                    <!-- Número Especial (Condicional) -->
                     <template x-if="programa.numeroEspecial.activo">
                         <div class="p-3 bg-gray-50 rounded border">
-                            <p class="font-bold text-blue-900 uppercase text-xs mb-1">4. Número Especial</p>
+                            <p class="font-bold text-blue-900 uppercase text-xs mb-1" x-text="numPaso('numeroEspecial') + ' Número Especial'"></p>
                             <p class="text-xs" x-text="(programa.numeroEspecial.participantes || '__________') + ' - ' + (programa.numeroEspecial.descripcionAccion || '__________')"></p>
                         </div>
                     </template>
-
-                    <!-- 5. Ordenanza(s) -->
+                
+                    <!-- Ordenanza de Bautismo -->
                     <div class="bg-blue-900 p-5 rounded-lg text-white shadow-md">
-                        <p class="font-bold mb-3 text-blue-200 uppercase tracking-widest text-xs">5. Ordenanza(s)</p>
-                        
+                        <p class="font-bold mb-3 text-blue-200 uppercase tracking-widest text-xs" x-text="numPaso('bautismo') + ' Ordenanza de Bautismo'"></p>
+                    
                         <template x-for="c in programa.bautizados" :key="c.id">
                             <div class="mb-3 border-b border-blue-800 pb-2 text-xs">
-                                <p class="font-bold text-blue-300 uppercase mb-1">Bautismo</p>
                                 <p>Persona a bautizarse: <span class="font-bold text-white" x-text="(c.nombres + ' ' + c.apellidos) || '[Converso]'"></span></p>
                                 <p>Oficiante: <span class="font-bold text-white" x-text="obtenerOficianteBautismo(c) || '[Oficiante]'"></span></p>
                                 <p class="text-blue-200 text-[11px] mt-1">Testigos: <span x-text="c.testigo1 || '__________'"></span> y <span x-text="c.testigo2 || '__________'"></span></p>
-                                
-                                <template x-if="programa.confirmacionMismoDia">
-                                    <div class="mt-2 pt-2 border-t border-blue-800/50">
-                                        <p class="font-bold text-green-300 uppercase mb-1">Confirmación</p>
-                                        <p>Oficiante: <span class="font-bold text-white" x-text="obtenerOficianteConfirmacion(c) || '[Oficiante]'"></span></p>
-                                    </div>
-                                </template>
                             </div>
                         </template>
-
+                    
                         <p class="text-[10px] italic opacity-80 mt-3">* Se solicita a la persona asignada con la toalla estar lista para recibir al nuevo miembro al salir de la pila.</p>
                     </div>
-
-                    <!-- 6. Reverencia y Testimonios -->
+                
+                    <!-- Reverencia y Cambio de Ropa -->
                     <div class="p-3 bg-gray-50 rounded border">
-                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">6. Reverencia y Testimonios</p>
-                        <p class="text-xs italic text-gray-600 mb-1">Música de himnos mientras el oficiante y el nuevo miembro se cambian de ropa.</p>
-                        <p class="text-xs text-gray-700">Tiempo abierto para testimonios, invitando especialmente al nuevo miembro.</p>
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1" x-text="numPaso('reverencia') + ' Reverencia y Vestimenta'"></p>
+                        <p class="text-xs italic text-gray-600">Música de himnos mientras las personas bautizadas se cambian de ropa.</p>
                     </div>
-
-                    <!-- 7. Cierre -->
+                
+                    <!-- Confirmación (Condicional) -->
+                    <template x-if="programa.confirmacionMismoDia">
+                        <div class="bg-green-900 p-5 rounded-lg text-white shadow-md">
+                            <p class="font-bold mb-3 text-green-200 uppercase tracking-widest text-xs" x-text="numPaso('confirmacion') + ' Ordenanza de Confirmación'"></p>
+                            <template x-for="c in programa.bautizados" :key="'conf-' + c.id">
+                                <div class="mb-2 border-b border-green-800 pb-2 text-xs">
+                                    <p>Persona: <span class="font-bold text-white" x-text="(c.nombres + ' ' + c.apellidos) || '[Converso]'"></span></p>
+                                    <p>Oficiante: <span class="font-bold text-white" x-text="obtenerOficianteConfirmacion(c) || '[Oficiante]'"></span></p>
+                                </div>
+                            </template>
+                        </div>
+                    </template>
+                
+                    <!-- Testimonios -->
+                    <div class="p-3 bg-gray-50 rounded border">
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1" x-text="numPaso('testimonios') + ' Testimonios'"></p>
+                        <p class="text-xs text-gray-700">Invitación al nuevo miembro a compartir su testimonio.</p>
+                    </div>
+                
+                    <!-- Palabras de Bienvenida -->
                     <div class="p-3 bg-gray-50 rounded border space-y-1">
-                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">7. Cierre</p>
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1" x-text="numPaso('bienvenida') + ' Palabras de Bienvenida'"></p>
+                        <p class="text-xs">• <span class="font-semibold">Organización:</span> <span x-text="programa.bienvenidaOrganizacion || '__________________________'"></span></p>
+                        <p class="text-xs">• <span class="font-semibold">Barrio:</span> <span x-text="programa.bienvenidaBarrio || '__________________________'"></span></p>
+                    </div>
+                
+                    <!-- Cierre -->
+                    <div class="p-3 bg-gray-50 rounded border space-y-1">
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1" x-text="numPaso('cierre') + ' Cierre'"></p>
                         <p class="text-xs">
                             Himno Final: 
                             <template x-if="programa.himnoCierre.urlLimpia">
@@ -447,6 +458,51 @@
                         { nombre: '', tema: 'Espíritu Santo' }
                     ],
                     numeroEspecial: { activo: false, participantes: '', descripcionAccion: '' }
+                },
+
+                // PROPIEDAD COMPUTADA PARA NUMERACIÓN DINÁMICA
+                get pasosDelPrograma() {
+                    let contador = 1;
+                    let pasos = [];
+                
+                    // 1. Apertura
+                    pasos.push({ id: 'apertura', numero: contador++, titulo: 'Apertura' });
+                
+                    // 2. Mensajes del Evangelio
+                    pasos.push({ id: 'discursos', numero: contador++, titulo: 'Mensajes del Evangelio' });
+                
+                    // 3. Número Especial (Condicional)
+                    if (this.programa.numeroEspecial.activo) {
+                        pasos.push({ id: 'numeroEspecial', numero: contador++, titulo: 'Número Especial' });
+                    }
+                
+                    // 4. Bautismo(s)
+                    pasos.push({ id: 'bautismo', numero: contador++, titulo: 'Ordenanza de Bautismo' });
+                
+                    // 5. Reverencia y Vestimenta
+                    pasos.push({ id: 'reverencia', numero: contador++, titulo: 'Reverencia y Vestimenta' });
+                
+                    // 6. Confirmación(es) (Condicional)
+                    if (this.programa.confirmacionMismoDia) {
+                        pasos.push({ id: 'confirmacion', numero: contador++, titulo: 'Ordenanza de Confirmación' });
+                    }
+                
+                    // 7. Testimonios
+                    pasos.push({ id: 'testimonios', numero: contador++, titulo: 'Testimonios' });
+                
+                    // 8. Palabras de Bienvenida
+                    pasos.push({ id: 'bienvenida', numero: contador++, titulo: 'Palabras de Bienvenida' });
+                
+                    // 9. Cierre
+                    pasos.push({ id: 'cierre', numero: contador++, titulo: 'Cierre' });
+                
+                    return pasos;
+                },
+            
+                // Método auxiliar para obtener el número de un paso específico por su ID
+                numPaso(idBuscado) {
+                    const paso = this.pasosDelPrograma.find(p => p.id === idBuscado);
+                    return paso ? paso.numero + '.' : '';
                 },
 
                 obtenerOficianteBautismo(converso) {

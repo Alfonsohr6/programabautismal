@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         alpineComponent.usarMismoOficianteBautismo = false;
         alpineComponent.usarMismoOficianteConfirmacion = false;
 
+        // Cargar datos generales directamente a la memoria de Alpine.js
         alpineComponent.programa = {
             fecha: '2026-05-18',
             barrio: 'Barrio San Juan',
@@ -46,16 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
             oracionCierre: 'Hermano Luis Morales',
             confirmacionMismoDia: true,
             himnoApertura: { 
-                numero: '136', 
-                titulo: 'Haz el bien', 
-                urlOriginal: 'https://www.churchofjesuschrist.org/study/music/hymns/do-what-is-right?lang=spa', 
-                urlLimpia: 'https://www.churchofjesuschrist.org/study/music/hymns/do-what-is-right?lang=spa' 
+                numero: '1', 
+                titulo: 'Ya rompe el alba', 
+                urlOriginal: '', 
+                urlLimpia: '' 
             },
             himnoCierre: { 
-                numero: '200', 
-                titulo: 'Dios os guarde', 
-                urlOriginal: 'https://www.churchofjesuschrist.org/study/music/hymns/god-be-with-you-till-we-meet-again?lang=spa', 
-                urlLimpia: 'https://www.churchofjesuschrist.org/study/music/hymns/god-be-with-you-till-we-meet-again?lang=spa' 
+                numero: '1021', 
+                titulo: 'Cristo me ama, lo sé', 
+                urlOriginal: '', 
+                urlLimpia: '' 
             },
             bautizados: [
                 { 
@@ -91,6 +92,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 descripcionAccion: 'Interpretación de "Soy un hijo de Dios"' 
             }
         };
+
+        // Textos de prueba (sucios o directos)
+        const entradaApertura = 'Ya rompe el alba https://www.churchofjesuschrist.org/study/manual/hymns/the-morning-breaks?lang=spa';
+        const entradaCierre = 'https://www.churchofjesuschrist.org/study/music/hymns-for-home-and-church/i-know-that-my-savior-loves-me?lang=spa';
+
+        // Poner a prueba la interfaz (DOM) simular que un usuario escribe en las casillas
+        const inputsUrl = document.querySelectorAll('input[placeholder="Pegar enlace del himno (URL)"]');
+        
+        if (inputsUrl.length >= 2) {
+            // Escribir en la casilla de Himno de Apertura y disparar evento de teclado/entrada
+            inputsUrl[0].value = entradaApertura;
+            inputsUrl[0].dispatchEvent(new Event('input', { bubbles: true }));
+
+            // Escribir en la casilla de Himno de Cierre y disparar evento de teclado/entrada
+            inputsUrl[1].value = entradaCierre;
+            inputsUrl[1].dispatchEvent(new Event('input', { bubbles: true }));
+        }
     });
 
     document.getElementById('btn-limpiar-prueba').addEventListener('click', () => {
@@ -135,5 +153,12 @@ document.addEventListener('DOMContentLoaded', () => {
             ],
             numeroEspecial: { activo: false, participantes: '', descripcionAccion: '' }
         };
+
+        // Limpiar visualmente las cajas de texto en la interfaz
+        const inputsUrl = document.querySelectorAll('input[placeholder="Pegar enlace del himno (URL)"]');
+        inputsUrl.forEach(input => {
+            input.value = '';
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+        });
     });
 });
