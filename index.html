@@ -8,11 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Alpine.js CDN -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <!-- html2pdf.js CDN para descarga directa de PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
     <style>
-        /* Estilos de impresión y PDF */
         .evitar-corte {
             break-inside: avoid;
             page-break-inside: avoid;
@@ -34,12 +31,12 @@
     <header class="no-print bg-blue-900 text-white p-4 shadow-md flex justify-between items-center sticky top-0 z-50">
         <div>
             <h1 class="text-xl font-bold">Generador de Programas Bautismales</h1>
-            <p class="text-xs text-blue-200">Panel de edición y exportación a PDF</p>
+            <p class="text-xs text-blue-200">Panel de edición e impresión reactiva</p>
         </div>
         <button 
-            @click="descargarPDF()" 
+            @click="window.print()" 
             class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg shadow transition flex items-center gap-2">
-            📥 Descargar PDF
+            🖨️ Generar / Imprimir PDF
         </button>
     </header>
 
@@ -81,7 +78,7 @@
                 </div>
             </div>
 
-            <h2 class="text-lg font-bold text-blue-900 border-b pb-2 pt-2">2. Ordenanzas y Configuración de Oficiantes</h2>
+            <h2 class="text-lg font-bold text-blue-900 border-b pb-2 pt-2">2. Ordenanzas y Oficiantes</h2>
             
             <!-- CONFIGURACIÓN DE BAUTISMO -->
             <div class="p-3 bg-blue-50 rounded-lg border border-blue-200 space-y-2">
@@ -93,7 +90,7 @@
 
                 <template x-if="usarMismoOficianteBautismo">
                     <div class="pt-2 space-y-2">
-                        <input type="text" x-model="oficianteBautismoGeneral" placeholder="Nombre del Oficiante General de Bautismo" class="w-full border rounded p-2 text-sm bg-white">
+                        <input type="text" x-model="oficianteBautismoGeneral" placeholder="Nombre del Oficiante General" class="w-full border rounded p-2 text-sm bg-white">
                         <label class="flex items-center gap-2 text-xs text-gray-600">
                             <input type="checkbox" x-model="oficianteBautismoGeneralAprobado" class="rounded text-blue-600">
                             Aprobado por el Obispo
@@ -145,27 +142,17 @@
                         <input type="text" x-model="converso.apellidos" placeholder="Apellidos" class="border rounded p-2 text-sm bg-white">
                     </div>
 
-                    <!-- Oficiante Bautismo Individual -->
                     <template x-if="!usarMismoOficianteBautismo">
                         <div class="p-2 bg-blue-50/50 border border-blue-100 rounded space-y-1">
                             <label class="block text-xs font-semibold text-blue-900">Oficiante Bautismo</label>
                             <input type="text" x-model="converso.oficianteBautismo" placeholder="Nombre completo" class="w-full border rounded p-2 text-sm bg-white">
-                            <label class="flex items-center gap-2 text-xs text-gray-600">
-                                <input type="checkbox" x-model="converso.oficianteBautismoAprobado" class="rounded text-blue-600">
-                                Aprobado por el Obispo
-                            </label>
                         </div>
                     </template>
 
-                    <!-- Oficiante Confirmación Individual -->
                     <template x-if="programa.confirmacionMismoDia && !usarMismoOficianteConfirmacion">
                         <div class="p-2 bg-green-50/50 border border-green-100 rounded space-y-1">
                             <label class="block text-xs font-semibold text-green-900">Oficiante Confirmación</label>
                             <input type="text" x-model="converso.oficianteConfirmacion" placeholder="Nombre completo" class="w-full border rounded p-2 text-sm bg-white">
-                            <label class="flex items-center gap-2 text-xs text-gray-600">
-                                <input type="checkbox" x-model="converso.oficianteConfirmacionAprobado" class="rounded text-green-600">
-                                Aprobado por el Obispo
-                            </label>
                         </div>
                     </template>
 
@@ -182,7 +169,6 @@
 
             <h2 class="text-lg font-bold text-blue-900 border-b pb-2 pt-2">4. Himnos y Discursos</h2>
             
-            <!-- Himno Apertura -->
             <div class="space-y-2">
                 <div class="flex justify-between items-center">
                     <label class="text-xs font-bold text-gray-700">Himno de Apertura</label>
@@ -195,7 +181,6 @@
                 <input type="text" @input="sanitizarUrlHimno('himnoApertura', $event.target.value)" placeholder="Pegar enlace del himno (URL)" class="w-full border rounded p-2 text-xs text-gray-600">
             </div>
 
-            <!-- Discursantes Dinámicos -->
             <div class="space-y-3">
                 <div class="flex justify-between items-center">
                     <label class="text-xs font-bold text-gray-700">Discursantes (Máximo 3)</label>
@@ -215,7 +200,6 @@
                 </template>
             </div>
 
-            <!-- Número Especial -->
             <div class="p-3 bg-gray-50 rounded border space-y-2">
                 <label class="flex items-center gap-2 text-xs font-bold text-gray-700">
                     <input type="checkbox" x-model="programa.numeroEspecial.activo" class="rounded text-blue-600">
@@ -229,7 +213,6 @@
                 </template>
             </div>
 
-            <!-- Himno Cierre -->
             <div class="space-y-2 pt-2">
                 <div class="flex justify-between items-center">
                     <label class="text-xs font-bold text-gray-700">Himno Final / Cierre</label>
@@ -242,7 +225,6 @@
                 <input type="text" @input="sanitizarUrlHimno('himnoCierre', $event.target.value)" placeholder="Pegar enlace del himno (URL)" class="w-full border rounded p-2 text-xs text-gray-600">
             </div>
 
-            <!-- Oraciones -->
             <div class="grid grid-cols-2 gap-2 pt-2">
                 <div>
                     <label class="block text-xs font-semibold text-gray-600 mb-1">Oración Apertura</label>
@@ -256,8 +238,8 @@
 
         </section>
 
-        <!-- PANEL DERECHO: PREVISUALIZACIÓN Y DOCUMENTO PDF -->
-        <section class="lg:col-span-7 bg-white p-8 shadow-2xl rounded-xl border-t-8 border-blue-600 print:w-full print:p-0 print:border-none" id="area-impresion">
+        <!-- PANEL DERECHO: PREVISUALIZACIÓN E IMPRESIÓN -->
+        <section class="lg:col-span-7 bg-white p-8 shadow-2xl rounded-xl border-t-8 border-blue-600 print:w-full print:p-0 print:border-none">
             
             <div class="space-y-6">
                 <!-- Header -->
@@ -300,25 +282,32 @@
                         <p class="text-xs mt-1">Oración: <span x-text="programa.oracionApertura || '__________________________'"></span></p>
                     </div>
 
-                    <!-- 2. Mensajes del Evangelio -->
+                    <!-- 2. Palabras de Bienvenida -->
                     <div class="p-3 bg-gray-50 rounded border space-y-1">
-                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">2. Mensajes del Evangelio</p>
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">2. Palabras de Bienvenida</p>
+                        <p class="text-xs">• <span class="font-semibold">Organización:</span> <span x-text="programa.bienvenidaOrganizacion || '__________________________'"></span></p>
+                        <p class="text-xs">• <span class="font-semibold">Barrio:</span> <span x-text="programa.bienvenidaBarrio || '__________________________'"></span></p>
+                    </div>
+
+                    <!-- 3. Mensajes del Evangelio -->
+                    <div class="p-3 bg-gray-50 rounded border space-y-1">
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">3. Mensajes del Evangelio</p>
                         <template x-for="d in programa.discursantes" :key="d.nombre">
                             <p class="text-xs ml-2">• <span class="font-semibold" x-text="d.tema + ':'"></span> <span x-text="d.nombre || '__________________________'"></span></p>
                         </template>
                     </div>
 
-                    <!-- 3. Número Especial -->
+                    <!-- 4. Número Especial -->
                     <template x-if="programa.numeroEspecial.activo">
                         <div class="p-3 bg-gray-50 rounded border">
-                            <p class="font-bold text-blue-900 uppercase text-xs mb-1">3. Número Especial</p>
+                            <p class="font-bold text-blue-900 uppercase text-xs mb-1">4. Número Especial</p>
                             <p class="text-xs" x-text="(programa.numeroEspecial.participantes || '__________') + ' - ' + (programa.numeroEspecial.descripcionAccion || '__________')"></p>
                         </div>
                     </template>
 
-                    <!-- 4. Ordenanza(s) -->
+                    <!-- 5. Ordenanza(s) -->
                     <div class="bg-blue-900 p-5 rounded-lg text-white shadow-md">
-                        <p class="font-bold mb-3 text-blue-200 uppercase tracking-widest text-xs">4. Ordenanza(s)</p>
+                        <p class="font-bold mb-3 text-blue-200 uppercase tracking-widest text-xs">5. Ordenanza(s)</p>
                         
                         <template x-for="c in programa.bautizados" :key="c.id">
                             <div class="mb-3 border-b border-blue-800 pb-2 text-xs">
@@ -339,18 +328,11 @@
                         <p class="text-[10px] italic opacity-80 mt-3">* Se solicita a la persona asignada con la toalla estar lista para recibir al nuevo miembro al salir de la pila.</p>
                     </div>
 
-                    <!-- 5. Reverencia y Testimonios -->
+                    <!-- 6. Reverencia y Testimonios -->
                     <div class="p-3 bg-gray-50 rounded border">
-                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">5. Reverencia y Testimonios</p>
+                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">6. Reverencia y Testimonios</p>
                         <p class="text-xs italic text-gray-600 mb-1">Música de himnos mientras el oficiante y el nuevo miembro se cambian de ropa.</p>
                         <p class="text-xs text-gray-700">Tiempo abierto para testimonios, invitando especialmente al nuevo miembro.</p>
-                    </div>
-
-                    <!-- 6. Palabras de Bienvenida -->
-                    <div class="p-3 bg-gray-50 rounded border space-y-1">
-                        <p class="font-bold text-blue-900 uppercase text-xs mb-1">6. Palabras de Bienvenida</p>
-                        <p class="text-xs">• <span class="font-semibold">Organización:</span> <span x-text="programa.bienvenidaOrganizacion || '__________________________'"></span></p>
-                        <p class="text-xs">• <span class="font-semibold">Barrio:</span> <span x-text="programa.bienvenidaBarrio || '__________________________'"></span></p>
                     </div>
 
                     <!-- 7. Cierre -->
@@ -370,11 +352,11 @@
                 </div>
             </div>
 
-            <!-- PÁGINA 2: ANEXO FICHAS DE APOYO AGRUPADAS -->
+            <!-- PÁGINA 2: ANEXO FICHAS DE APOYO -->
             <div class="page-break pt-8 mt-8 border-t-2 border-dashed border-gray-300 print:border-none">
                 <h2 class="text-center font-bold text-blue-900 uppercase tracking-wider mb-6 text-base">Anexo: Tarjetas de Apoyo para Oficiantes</h2>
 
-                <!-- SECCIÓN 1: TODAS LAS FICHAS DE BAUTISMO -->
+                <!-- SECCIÓN 1: FICHAS DE BAUTISMO -->
                 <div class="space-y-4 mb-6">
                     <p class="text-xs font-bold text-blue-800 uppercase tracking-widest border-b border-blue-200 pb-1">Ordenanzas de Bautismo</p>
                     <div class="grid grid-cols-1 gap-4">
@@ -393,7 +375,7 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN 2: TODAS LAS FICHAS DE CONFIRMACIÓN (SI APLICA) -->
+                <!-- SECCIÓN 2: FICHAS DE CONFIRMACIÓN -->
                 <template x-if="programa.confirmacionMismoDia">
                     <div class="space-y-4 mb-6 pt-4 border-t border-gray-200">
                         <p class="text-xs font-bold text-green-800 uppercase tracking-widest border-b border-green-200 pb-1">Ordenanzas de Confirmación</p>
@@ -419,14 +401,11 @@
 
     </main>
 
-    <!-- LÓGICA CON ALPINE.JS Y DESCARGA PDF -->
+    <!-- LÓGICA CON ALPINE.JS -->
     <script>
-        
-        // ADVERTENCIA AL SALIR/RECARGAR LA PÁGINA
+        // ADVERTENCIA AL SALIR O RECARGAR
         window.addEventListener('beforeunload', (event) => {
-            // Cancelar el evento según el estándar
             event.preventDefault();
-            // Chrome requiere que returnValue sea asignado a un string
             event.returnValue = '';
         });
 
@@ -458,9 +437,7 @@
                             nombres: '', 
                             apellidos: '', 
                             oficianteBautismo: '', 
-                            oficianteBautismoAprobado: false,
                             oficianteConfirmacion: '',
-                            oficianteConfirmacionAprobado: false,
                             testigo1: '', 
                             testigo2: '' 
                         }
@@ -486,13 +463,12 @@
                         nombres: '',
                         apellidos: '',
                         oficianteBautismo: '',
-                        oficianteBautismoAprobado: false,
                         oficianteConfirmacion: '',
-                        oficianteConfirmacionAprobado: false,
                         testigo1: '',
                         testigo2: ''
                     });
                 },
+
                 removerConverso(index) {
                     this.programa.bautizados.splice(index, 1);
                 },
@@ -502,6 +478,7 @@
                         this.programa.discursantes.push({ nombre: '', tema: 'Santa Cena' });
                     }
                 },
+
                 removerDiscursante(index) {
                     this.programa.discursantes.splice(index, 1);
                 },
@@ -514,26 +491,10 @@
                     } else {
                         this.programa[campo].urlLimpia = '';
                     }
-                },
-
-                descargarPDF() {
-                    const elemento = document.getElementById('area-impresion');
-                    const opciones = {
-                        margin:       0.5,
-                        filename:     'Programa_Bautismal.pdf',
-                        image:        { type: 'jpeg', quality: 0.98 },
-                        html2canvas:  { scale: 2 },
-                        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' },
-                        pagebreak:    { mode: ['css', 'legacy'] }
-                    };
-
-                    html2pdf().set(opciones).from(elemento).save();
                 }
             }
         }
     </script>
-
     <script src="prueba.js"></script>
-
 </body>
 </html>
